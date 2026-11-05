@@ -1,0 +1,589 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Student Hub</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+    background: #f4f5fb;
+    color: #24243b;
+}
+
+header {
+    background: linear-gradient(120deg, #6555d9, #9885f5);
+    color: white;
+    padding: 25px 7%;
+}
+
+header h1 {
+    font-size: 30px;
+}
+
+header p {
+    margin-top: 8px;
+    opacity: .9;
+}
+
+nav {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 15px 7%;
+    background: white;
+    box-shadow: 0 3px 12px #0000000d;
+}
+
+nav button {
+    border: none;
+    background: #eeeaff;
+    color: #6555d9;
+    padding: 11px 17px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+nav button.active,
+nav button:hover {
+    background: #6555d9;
+    color: white;
+}
+
+main {
+    padding: 30px 7%;
+}
+
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+}
+
+h2 {
+    margin-bottom: 20px;
+    color: #343052;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: white;
+    border-radius: 15px;
+    padding: 22px;
+    box-shadow: 0 5px 20px #25204d0d;
+    margin-bottom: 20px;
+}
+
+.card h3 {
+    color: #6555d9;
+    margin-bottom: 12px;
+}
+
+.number {
+    font-size: 30px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+input, textarea, select {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 15px;
+}
+
+textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.action {
+    border: none;
+    background: #6555d9;
+    color: white;
+    padding: 11px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 8px;
+}
+
+.action:hover {
+    background: #4939b5;
+}
+
+.item {
+    background: #f5f3ff;
+    padding: 13px;
+    margin: 10px 0;
+    border-radius: 9px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.item button {
+    border: none;
+    background: #6555d9;
+    color: white;
+    padding: 7px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.done {
+    text-decoration: line-through;
+    opacity: .5;
+}
+
+.progress {
+    height: 12px;
+    background: #e9e6f7;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-top: 12px;
+}
+
+.bar {
+    height: 100%;
+    width: 0%;
+    background: #6555d9;
+    transition: width .3s;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+th, td {
+    padding: 13px;
+    border: 1px solid #eee;
+    text-align: left;
+}
+
+th {
+    background: #eeeaff;
+    color: #5141bb;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    color: #777;
+}
+
+@media(max-width:600px) {
+    header h1 { font-size: 24px; }
+    main { padding: 22px 5%; }
+    nav { padding: 12px 5%; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>🎓 Smart Student Hub</h1>
+    <p>Your personal space to learn, plan and achieve!</p>
+</header>
+
+<nav>
+    <button class="active" onclick="showPage('home',this)">Home</button>
+    <button onclick="showPage('tasks',this)">My Tasks</button>
+    <button onclick="showPage('notes',this)">Notes</button>
+    <button onclick="showPage('timetable',this)">Timetable</button>
+    <button onclick="showPage('exam',this)">Exam Countdown</button>
+</nav>
+
+<main>
+
+<!-- HOME -->
+<section id="home" class="page active">
+    <h2>Welcome to your Dashboard 👋</h2>
+
+    <div class="grid">
+        <div class="card">
+            <h3>📚 Total Tasks</h3>
+            <div class="number" id="totalTasks">0</div>
+        </div>
+
+        <div class="card">
+            <h3>✅ Completed Tasks</h3>
+            <div class="number" id="completedTasks">0</div>
+        </div>
+
+        <div class="card">
+            <h3>📈 Study Progress</h3>
+            <div class="number" id="percentage">0%</div>
+            <div class="progress">
+                <div class="bar" id="progressBar"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>📅 Today's Date</h3>
+            <div class="number" id="today"></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>🌟 Daily Motivation</h3>
+        <p id="quote">Small steps every day lead to big achievements!</p>
+        <button class="action" onclick="newQuote()">New Motivation</button>
+    </div>
+</section>
+
+<!-- TASKS -->
+<section id="tasks" class="page">
+    <h2>📝 My Task Manager</h2>
+
+    <div class="card">
+        <h3>Add a New Task</h3>
+        <input id="taskInput" placeholder="Enter your task">
+        <input type="date" id="taskDate">
+        <button class="action" onclick="addTask()">Add Task</button>
+    </div>
+
+    <div class="card">
+        <h3>My Tasks</h3>
+        <div id="taskList"></div>
+    </div>
+</section>
+
+<!-- NOTES -->
+<section id="notes" class="page">
+    <h2>📖 My Study Notes</h2>
+
+    <div class="card">
+        <h3>Create Your Notes</h3>
+        <input id="noteTitle" placeholder="Subject or note title">
+        <textarea id="noteContent" placeholder="Write your study notes here..."></textarea>
+        <button class="action" onclick="saveNote()">Save Notes</button>
+    </div>
+
+    <div class="card">
+        <h3>Saved Notes</h3>
+        <div id="noteList"></div>
+    </div>
+</section>
+
+<!-- TIMETABLE -->
+<section id="timetable" class="page">
+    <h2>⏰ My Study Timetable</h2>
+
+    <div class="card">
+        <h3>Add Study Schedule</h3>
+        <input id="subject" placeholder="Subject name">
+        <input id="studyTime" type="time">
+        <select id="studyDay">
+            <option>Monday</option>
+            <option>Tuesday</option>
+            <option>Wednesday</option>
+            <option>Thursday</option>
+            <option>Friday</option>
+            <option>Saturday</option>
+            <option>Sunday</option>
+        </select>
+        <button class="action" onclick="addSchedule()">Add Schedule</button>
+    </div>
+
+    <div class="card">
+        <h3>My Schedule</h3>
+        <div id="scheduleList"></div>
+    </div>
+</section>
+
+<!-- EXAM COUNTDOWN -->
+<section id="exam" class="page">
+    <h2>📅 Exam Countdown</h2>
+
+    <div class="card">
+        <h3>Set Your Exam Date</h3>
+        <input type="text" id="examName" placeholder="Enter exam name">
+        <input type="date" id="examDate">
+        <button class="action" onclick="saveExam()">Save Exam</button>
+    </div>
+
+    <div class="card">
+        <h3 id="examTitle">Your Exam</h3>
+        <div class="number" id="countdown">No exam added</div>
+        <p>Stay focused and prepare well! 💜</p>
+    </div>
+</section>
+
+</main>
+
+<footer>
+    <p>© 2026 Smart Student Hub | Learn • Plan • Achieve</p>
+</footer>
+
+<script>
+
+// Navigation
+function showPage(page, button) {
+    document.querySelectorAll('.page').forEach(p =>
+        p.classList.remove('active'));
+
+    document.getElementById(page).classList.add('active');
+
+    document.querySelectorAll('nav button').forEach(b =>
+        b.classList.remove('active'));
+
+    button.classList.add('active');
+}
+
+// Date
+document.getElementById('today').textContent =
+    new Date().toLocaleDateString();
+
+// Local storage data
+let tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+let notes = JSON.parse(localStorage.getItem('notes') || '[]');
+let schedules = JSON.parse(localStorage.getItem('schedules') || '[]');
+
+function store() {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+    localStorage.setItem('notes', JSON.stringify(notes));
+    localStorage.setItem('schedules', JSON.stringify(schedules));
+}
+
+// Task manager
+function addTask() {
+    let input = document.getElementById('taskInput');
+    let date = document.getElementById('taskDate');
+
+    if (!input.value.trim()) {
+        alert('Please enter a task!');
+        return;
+    }
+
+    tasks.push({
+        name: input.value.trim(),
+        date: date.value,
+        done: false
+    });
+
+    input.value = '';
+    date.value = '';
+    store();
+    renderTasks();
+}
+
+function renderTasks() {
+    let list = document.getElementById('taskList');
+    list.innerHTML = '';
+
+    tasks.forEach((task, index) => {
+        let div = document.createElement('div');
+        div.className = 'item';
+
+        let info = document.createElement('span');
+        info.className = task.done ? 'done' : '';
+        info.textContent = task.name +
+            (task.date ? ' | ' + task.date : '');
+
+        let complete = document.createElement('button');
+        complete.textContent = task.done ? 'Undo' : 'Done';
+        complete.onclick = () => {
+            tasks[index].done = !tasks[index].done;
+            store();
+            renderTasks();
+        };
+
+        let remove = document.createElement('button');
+        remove.textContent = 'Delete';
+        remove.onclick = () => {
+            tasks.splice(index, 1);
+            store();
+            renderTasks();
+        };
+
+        div.append(info, complete, remove);
+        list.appendChild(div);
+    });
+
+    updateDashboard();
+}
+
+// Dashboard
+function updateDashboard() {
+    let completed = tasks.filter(t => t.done).length;
+    let percent = tasks.length ?
+        Math.round(completed / tasks.length * 100) : 0;
+
+    document.getElementById('totalTasks').textContent = tasks.length;
+    document.getElementById('completedTasks').textContent = completed;
+    document.getElementById('percentage').textContent = percent + '%';
+    document.getElementById('progressBar').style.width = percent + '%';
+}
+
+// Notes
+function saveNote() {
+    let title = document.getElementById('noteTitle').value.trim();
+    let content = document.getElementById('noteContent').value.trim();
+
+    if (!title || !content) {
+        alert('Enter both title and notes!');
+        return;
+    }
+
+    notes.push({title, content});
+
+    document.getElementById('noteTitle').value = '';
+    document.getElementById('noteContent').value = '';
+
+    store();
+    renderNotes();
+}
+
+function renderNotes() {
+    let list = document.getElementById('noteList');
+    list.innerHTML = '';
+
+    notes.forEach((note, index) => {
+        let div = document.createElement('div');
+        div.className = 'item';
+
+        let info = document.createElement('span');
+        info.textContent = note.title + ': ' + note.content;
+
+        let remove = document.createElement('button');
+        remove.textContent = 'Delete';
+        remove.onclick = () => {
+            notes.splice(index, 1);
+            store();
+            renderNotes();
+        };
+
+        div.append(info, remove);
+        list.appendChild(div);
+    });
+}
+
+// Timetable
+function addSchedule() {
+    let subject = document.getElementById('subject').value.trim();
+    let time = document.getElementById('studyTime').value;
+    let day = document.getElementById('studyDay').value;
+
+    if (!subject || !time) {
+        alert('Enter subject and time!');
+        return;
+    }
+
+    schedules.push({subject, time, day});
+    document.getElementById('subject').value = '';
+    document.getElementById('studyTime').value = '';
+
+    store();
+    renderSchedules();
+}
+
+function renderSchedules() {
+    let list = document.getElementById('scheduleList');
+    list.innerHTML = '';
+
+    schedules.forEach((s, index) => {
+        let div = document.createElement('div');
+        div.className = 'item';
+
+        let info = document.createElement('span');
+        info.textContent = s.day + ' | ' + s.time + ' | ' + s.subject;
+
+        let remove = document.createElement('button');
+        remove.textContent = 'Delete';
+        remove.onclick = () => {
+            schedules.splice(index, 1);
+            store();
+            renderSchedules();
+        };
+
+        div.append(info, remove);
+        list.appendChild(div);
+    });
+}
+
+// Exam countdown
+function saveExam() {
+    let name = document.getElementById('examName').value.trim();
+    let date = document.getElementById('examDate').value;
+
+    if (!name || !date) {
+        alert('Enter exam name and date!');
+        return;
+    }
+
+    let selected = new Date(date + 'T00:00:00');
+
+    if (selected < new Date(new Date().toDateString())) {
+        alert('Please select a future date!');
+        return;
+    }
+
+    localStorage.setItem('exam', JSON.stringify({name, date}));
+    document.getElementById('examName').value = '';
+    document.getElementById('examDate').value = '';
+    renderExam();
+}
+
+function renderExam() {
+    let exam = JSON.parse(localStorage.getItem('exam') || 'null');
+
+    if (!exam) return;
+
+    document.getElementById('examTitle').textContent = exam.name;
+
+    let examDay = new Date(exam.date + 'T00:00:00');
+    let today = new Date();
+    today.setHours(0,0,0,0);
+
+    let days = Math.round((examDay - today) / 86400000);
+
+    document.getElementById('countdown').textContent =
+        days === 0 ? 'Exam is today!' :
+        days + ' days remaining';
+}
+
+// Motivation
+const quotes = [
+    'Believe in yourself. You can do it!',
+    'Every expert was once a beginner.',
+    'Dream big. Work hard. Stay focused.',
+    'Your future is created by what you do today.',
+    'Small progress is still progress!'
+];
+
+function newQuote() {
+    let index = Math.floor(Math.random() * quotes.length);
+    document.getElementById('quote').textContent = quotes[index];
+}
+
+// Load saved data
+renderTasks();
+renderNotes();
+renderSchedules();
+renderExam();
+
+</script>
+</body>
+</html>
